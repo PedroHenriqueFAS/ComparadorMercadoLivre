@@ -26,4 +26,8 @@ time.sleep(1)
 barra_pesquisa.send_keys(Keys.ENTER)
 time.sleep(2)
 
+produto = driver.find_element(
+    By.CSS_SELECTOR, 'li[class="ui-search-layout__item"]')
+print(produto.text)
+
 input('Pressione Enter para finalizar')
