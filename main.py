@@ -15,45 +15,53 @@ driver = webdriver.Chrome(options=options, service=service)
 
 LINK = "https://www.mercadolivre.com.br/" 
 
-driver.get(LINK)
-time.sleep(1)
-barra_pesquisa = driver.find_element(By.ID, "cb1-edit")
+produtos_input = ['casaco masculino', 'iphone 16', 'camisa feminina', 'tenis masculino']
 
-produto_input = 'iphone 16' #input('Digite o produto que deseja pesquisar: ')
+for produto_input in produtos_input:
 
-barra_pesquisa.send_keys(produto_input)
-produto_input = produto_input.split() #split serve para separar as palavras 
-time.sleep(1)
-barra_pesquisa.send_keys(Keys.ENTER)
-time.sleep(2)
+    driver.get(LINK)
+    time.sleep(1)
+    barra_pesquisa = driver.find_element(By.ID, "cb1-edit")
 
-produto_lista = driver.find_elements(
-    By.CSS_SELECTOR, 'li[class="ui-search-layout__item"]')
+    #produto_input = 'iphone 16' 
+    #produto_input = input('Digite o produto que deseja pesquisar: ')
 
-errado = False
+    barra_pesquisa.send_keys(produto_input)
+    produto_input = produto_input.split() #split serve para separar as palavras 
+    time.sleep(1)
+    barra_pesquisa.send_keys(Keys.ENTER)
+    time.sleep(2)
 
-for produto in produto_lista:
-    produto_pesquisado = produto
-    produto_texto = produto.find_element(By.CSS_SELECTOR, 
-                                        "div[class='poly-card__content']")
+    produto_lista = driver.find_elements(
+        By.CSS_SELECTOR, 'li[class="ui-search-layout__item"]')
 
-    produto_texto = produto_texto.find_element(By.CSS_SELECTOR, 
-                                            'a[class="poly-component__title"]')
-    titulo_produto = produto_texto.text
-    
-    for palavra in produto_input:
-        if not palavra.lower() in titulo_produto.lower():
-            errado = True
-    
-    if errado == True:
-        errado = False
-        continue
-    break
+    errado = False
 
-preco = produto_pesquisado.find_element(By.CSS_SELECTOR, 
-                                        'span[class="andes-money-amount__fraction"]').text
+    for produto in produto_lista:
+        produto_pesquisado = produto
+        produto_texto = produto.find_element(By.CSS_SELECTOR, 
+                                            "div[class='poly-card__content']")
 
-#print(produto_texto.text)
-print(titulo_produto, preco)
+        produto_texto = produto_texto.find_element(By.CSS_SELECTOR, 
+                                                'a[class="poly-component__title"]')
+        titulo_produto = produto_texto.text
+        
+        for palavra in produto_input:
+            if not palavra.lower() in titulo_produto.lower():
+                errado = True
+        
+        if errado == True:
+            errado = False
+            continue
+        break
+
+    preco = produto_pesquisado.find_element(By.CSS_SELECTOR, 
+                                            'span[class="andes-money-amount__fraction"]').text
+
+    with open('produtos.txt', 'a+') as file:
+        file.write(f'Produto: {titulo_produto}-Preco:{preco}\n')
+    #print(produto_pesquisado.text)
+    print(titulo_produto, preco)
+        
 
 input('Pressione Enter para finalizar')
